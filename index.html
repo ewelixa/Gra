@@ -209,17 +209,18 @@
 
     .game-link {
       display: inline-flex;
-      min-height: 48px;
+      width: min(90vw, 420px);
+      min-height: clamp(108px, 20vw, 144px);
       align-items: center;
       justify-content: center;
       gap: 10px;
-      padding: 11px 24px;
+      padding: clamp(18px, 4vw, 33px) clamp(24px, 7vw, 72px);
       color: white;
       background: linear-gradient(180deg, #ed79a5, var(--berry));
       border: 0;
       border-radius: 999px;
-      box-shadow: 0 6px 0 #b73868, 0 11px 20px #d950852d;
-      font-size: clamp(18px, 2vw, 21px);
+      box-shadow: 0 9px 0 #b73868, 0 16px 25px #d950852d;
+      font-size: clamp(42px, 9vw, 63px);
       font-weight: 900;
       text-decoration: none;
       transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
@@ -237,13 +238,14 @@
     }
 
     .music-frame {
-      display: block;
-      width: min(100%, 520px);
-      height: 140px;
-      margin: 12px auto 0;
+      position: fixed;
+      top: 0;
+      left: -10000px;
+      width: 1px;
+      height: 1px;
       border: 0;
-      border-radius: 14px;
-      background: #1e284a;
+      opacity: 0;
+      pointer-events: none;
     }
 
     .meme {
@@ -333,8 +335,7 @@
       .horse { width: 100%; height: 108px; }
       .horse-name { margin-top: 4px; padding: 4px 2px; border-radius: 10px; font-size: 8px; }
       .link-area { margin-top: 10px; padding-top: 26px; }
-      .music-frame { height: 120px; margin-top: 8px; }
-      .game-link { min-height: 42px; padding: 9px 24px; }
+      .game-link { min-height: clamp(108px, 36vw, 144px); padding: 18px 24px; font-size: clamp(48px, 15vw, 54px); }
       .spinning-horse { width: 29px; height: 42px; }
       .spinning-horse:nth-child(1) { top: 25%; left: 0; }
       .spinning-horse:nth-child(2) { top: 25%; right: 0; }
@@ -402,7 +403,7 @@
             Zagraj
           </a>
         </div>
-        <iframe class="music-frame" src="https://suno.com/embed/e62fb160-2381-4b79-a01c-2a34fbf6330c?autoplay=1" title="korpokoniarze_reaktywacja — odtwarzacz Suno" allow="autoplay; encrypted-media; fullscreen"></iframe>
+        <iframe class="music-frame" src="https://suno.com/embed/e62fb160-2381-4b79-a01c-2a34fbf6330c?autoplay=1" title="korpokoniarze_reaktywacja — odtwarzacz Suno" aria-hidden="true" allow="autoplay; encrypted-media; fullscreen"></iframe>
       </div>
       <div class="sticker-line" aria-hidden="true"><span>🎈</span><span>🥕</span><span>🐴</span><span>✨</span><span>💨</span></div>
       <div class="horse-gallery" role="list" aria-label="Cztery konie urodzinowe">
