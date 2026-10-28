@@ -1,0 +1,454 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#fff7ea">
+  <meta name="description" content="Koniki — urodzinowa strona z czterema końmi w czapeczkach.">
+  <meta property="og:title" content="Koniki">
+  <meta property="og:description" content="Cztery urodzinowe konie i przycisk Zagraj.">
+  <title>Koniki</title>
+  <style>
+    :root {
+      color-scheme: light;
+      --ink: #563b4a;
+      --berry: #db5487;
+      --berry-dark: #bd3d70;
+      --cream: #fffaf3;
+      --mint: #cfeee0;
+      --sky: #d9eff8;
+      --gold: #f5c653;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      min-width: 320px;
+      min-height: 100svh;
+      margin: 0;
+      overflow-x: hidden;
+      color: var(--ink);
+      font-family: "Trebuchet MS", "Arial Rounded MT Bold", system-ui, sans-serif;
+      background:
+        radial-gradient(ellipse at 8% 18%, #ffffffc9 0 5%, transparent 5.5%),
+        radial-gradient(ellipse at 92% 12%, #ffffffb5 0 4%, transparent 4.5%),
+        linear-gradient(180deg, #eaf8fc 0%, #fff7ea 55%, #ffefd8 100%);
+    }
+
+    .page {
+      position: relative;
+      display: grid;
+      min-height: 100svh;
+      place-items: center;
+      padding: 24px 24px;
+      isolation: isolate;
+    }
+
+    .confetti {
+      position: absolute;
+      z-index: -1;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .scene {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      grid-template-columns: minmax(0, 1fr);
+      justify-items: center;
+      align-items: center;
+      width: min(100%, 940px);
+      gap: 12px;
+    }
+
+    .horse {
+      display: block;
+      width: min(100%, 180px);
+      height: 190px;
+      margin: 0 auto;
+      object-fit: contain;
+      object-position: center bottom;
+      filter: drop-shadow(0 10px 2px #895a4a19) saturate(1.12);
+      animation: horse-spin 2.4s linear infinite;
+    }
+
+    .spinning-horses {
+      position: absolute;
+      z-index: 0;
+      inset: 0;
+      overflow: hidden;
+      pointer-events: none;
+    }
+
+    .spinning-horse {
+      position: absolute;
+      width: clamp(46px, 5vw, 68px);
+      height: clamp(58px, 6vw, 80px);
+      object-fit: contain;
+      filter: drop-shadow(0 4px 2px #895a4a22);
+      animation: horse-spin 1.8s linear infinite;
+    }
+
+    .spinning-horse:nth-child(1) { top: 32%; left: 3.5%; }
+    .spinning-horse:nth-child(2) { top: 32%; right: 3.5%; animation-delay: -.45s; }
+    .spinning-horse:nth-child(3) { bottom: 29%; left: 4.5%; animation-delay: -.9s; }
+    .spinning-horse:nth-child(4) { right: 4.5%; bottom: 29%; animation-delay: -1.35s; }
+
+    .horse-card { position: relative; min-width: 0; margin: 0; text-align: center; }
+    .horse-card:not(:last-child)::after {
+      position: absolute;
+      z-index: 2;
+      top: 42%;
+      right: -17px;
+      color: #db5487;
+      content: "🥕";
+      font-size: clamp(15px, 2vw, 23px);
+      filter: drop-shadow(0 2px white);
+      transform: rotate(13deg);
+    }
+    .horse-card:nth-child(2)::after { content: "✨"; }
+    .horse-card:nth-child(3)::after { content: "🐎"; }
+    .horse-card:nth-child(2) .horse { animation-delay: -.7s; }
+    .horse-card:nth-child(3) .horse { animation-delay: -1.4s; }
+    .horse-card:nth-child(4) .horse { animation-delay: -2.1s; }
+
+    .horse-gallery {
+      display: grid;
+      grid-template-columns: repeat(4, minmax(0, 1fr));
+      align-items: end;
+      width: min(100%, 880px);
+      gap: clamp(8px, 2vw, 22px);
+      margin: 0 auto;
+    }
+
+    .horse-name {
+      display: inline-block;
+      max-width: 100%;
+      margin-top: 8px;
+      padding: 7px 11px;
+      color: #684a5c;
+      background: #fffdf8;
+      border: 2px solid #f2c7d8;
+      border-radius: 999px;
+      box-shadow: 0 3px 0 #f2dce6;
+      font-size: clamp(12px, 1.3vw, 16px);
+      font-weight: 900;
+      line-height: 1.2;
+    }
+
+    .sticker-line {
+      display: flex;
+      min-height: 22px;
+      align-items: center;
+      justify-content: center;
+      gap: clamp(14px, 4vw, 42px);
+      font-size: clamp(16px, 2vw, 24px);
+      line-height: 1;
+    }
+
+    .sticker-line span:nth-child(odd) { display: inline-block; transform: rotate(-9deg); }
+    .sticker-line span:nth-child(even) { display: inline-block; transform: rotate(8deg); }
+
+    @keyframes horse-spin { to { transform: rotate(360deg); } }
+
+    .greeting {
+      position: relative;
+      margin: 0;
+      padding: clamp(18px, 3vh, 28px) clamp(20px, 4vw, 42px) 22px;
+      text-align: center;
+      background: #fffdf8ed;
+      border: 4px solid white;
+      border-radius: 38px;
+      box-shadow: 0 18px 55px #9c647020, 0 5px 0 #f5dbe5;
+    }
+
+    .sound-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      padding: 0;
+      color: var(--berry-dark);
+      background: #fff8fb;
+      border: 2px solid #f2c7d8;
+      border-radius: 50%;
+      box-shadow: 0 2px 0 #f2dce6;
+      cursor: pointer;
+      font-size: 17px;
+    }
+
+    .sound-toggle:focus-visible { outline: 3px solid #f0bf41; outline-offset: 3px; }
+    .sound-toggle:hover { transform: scale(1.08); }
+
+    .greeting::before,
+    .greeting::after {
+      position: absolute;
+      top: -22px;
+      display: grid;
+      width: 46px;
+      height: 46px;
+      place-items: center;
+      content: "✦";
+      color: #f0ad36;
+      font-size: 33px;
+      text-shadow: 0 2px white;
+    }
+
+    .greeting::before { left: 18%; }
+    .greeting::after { right: 18%; color: var(--berry); transform: rotate(15deg); }
+
+    h1 {
+      margin: 0;
+      color: var(--berry-dark);
+      font-size: clamp(36px, 5.8vw, 68px);
+      font-weight: 1000;
+      letter-spacing: -.06em;
+      line-height: .95;
+      text-wrap: balance;
+      text-shadow: 0 4px 0 #f9dce7, 0 8px 18px #d9508530;
+      animation: title-blink 1.05s steps(2, start) infinite;
+    }
+
+    @keyframes title-blink {
+      0%, 44% { opacity: 1; }
+      45%, 100% { opacity: .48; }
+    }
+
+    .link-area {
+      position: relative;
+      display: flex;
+      justify-content: center;
+      margin: 14px auto 0;
+      padding-top: 29px;
+    }
+
+    .game-link {
+      display: inline-flex;
+      min-height: 48px;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      padding: 11px 24px;
+      color: white;
+      background: linear-gradient(180deg, #ed79a5, var(--berry));
+      border: 0;
+      border-radius: 999px;
+      box-shadow: 0 6px 0 #b73868, 0 11px 20px #d950852d;
+      font-size: clamp(18px, 2vw, 21px);
+      font-weight: 900;
+      text-decoration: none;
+      transition: transform .16s ease, box-shadow .16s ease, background .16s ease;
+    }
+
+    .game-link:hover {
+      background: linear-gradient(180deg, #f18ab0, #ce437b);
+      box-shadow: 0 3px 0 #b73868, 0 8px 16px #d950852d;
+      transform: translateY(3px);
+    }
+
+    .game-link:focus-visible {
+      outline: 4px solid #f0bf41;
+      outline-offset: 6px;
+    }
+
+    .meme {
+      position: absolute;
+      z-index: 2;
+      display: grid;
+      width: clamp(104px, 11vw, 140px);
+      min-height: 86px;
+      align-content: center;
+      justify-items: center;
+      gap: 2px;
+      padding: 7px 8px 8px;
+      color: #332831;
+      background: #fffdf8;
+      border: 3px solid #332831;
+      box-shadow: 4px 5px 0 #332831;
+      text-align: center;
+      transform: rotate(-7deg);
+    }
+
+    .meme-emoji { font-size: clamp(27px, 3vw, 38px); line-height: 1; }
+    .meme-caption { font-size: clamp(8px, .9vw, 11px); font-weight: 1000; line-height: 1.15; text-transform: uppercase; }
+    .meme--tl { top: 20px; left: 22px; }
+    .meme--tr { top: 26px; right: 24px; background: #fce0eb; transform: rotate(6deg); }
+    .meme--bl { bottom: 20px; left: 24px; background: #e3f4ec; transform: rotate(5deg); }
+    .meme--br { right: 24px; bottom: 22px; background: #fff0c8; transform: rotate(-5deg); }
+
+    .balloon {
+      position: absolute;
+      z-index: -1;
+      width: 54px;
+      height: 67px;
+      border-radius: 52% 48% 50% 50%;
+      opacity: .72;
+      box-shadow: inset -9px -8px 0 #75465212, inset 8px 8px 0 #ffffff52;
+    }
+
+    .balloon::before {
+      position: absolute;
+      bottom: -5px;
+      left: 23px;
+      width: 9px;
+      height: 8px;
+      background: inherit;
+      clip-path: polygon(0 0, 100% 0, 50% 100%);
+      content: "";
+    }
+
+    .balloon::after {
+      position: absolute;
+      top: 73px;
+      left: 27px;
+      width: 1px;
+      height: 70px;
+      background: #9b8e9a6b;
+      content: "";
+      transform: rotate(5deg);
+    }
+
+    .balloon-one { top: 9%; left: 12%; background: #ffc4d8; transform: rotate(-10deg); }
+    .balloon-two { top: 17%; right: 12%; background: #f7d878; transform: rotate(8deg) scale(.82); }
+    .balloon-three { right: 25%; bottom: 6%; background: #bfe6d6; transform: rotate(-9deg) scale(.62); }
+
+    @media (max-width: 850px) {
+      .page { padding: 18px 16px; }
+      .scene { gap: 8px; }
+      .greeting { padding: 18px 16px 15px; border-radius: 30px; }
+      .horse { height: 166px; }
+      .link-area { margin-top: 11px; padding-top: 26px; }
+      .spinning-horse { width: 44px; height: 58px; }
+      .spinning-horse:nth-child(1) { left: 1%; }
+      .spinning-horse:nth-child(2) { right: 1%; }
+      .spinning-horse:nth-child(3) { left: 1%; }
+      .spinning-horse:nth-child(4) { right: 1%; }
+    }
+
+    @media (max-width: 560px) {
+      .page { padding: 28px 8px; }
+      .scene { width: min(100%, 620px); gap: 8px; }
+      .greeting {
+        margin: 0;
+        padding: 18px 12px 15px;
+      }
+      h1 { font-size: clamp(30px, 9vw, 45px); }
+      .horse-gallery { grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 3px; }
+      .horse-card:not(:last-child)::after { display: none; }
+      .horse { width: 100%; height: 108px; }
+      .horse-name { margin-top: 4px; padding: 4px 2px; border-radius: 10px; font-size: 8px; }
+      .link-area { margin-top: 10px; padding-top: 26px; }
+      .game-link { min-height: 42px; padding: 9px 24px; }
+      .spinning-horse { width: 29px; height: 42px; }
+      .spinning-horse:nth-child(1) { top: 25%; left: 0; }
+      .spinning-horse:nth-child(2) { top: 25%; right: 0; }
+      .spinning-horse:nth-child(3) { bottom: 24%; left: 0; }
+      .spinning-horse:nth-child(4) { right: 0; bottom: 24%; }
+      .balloon-one { top: 4%; left: 4%; transform: rotate(-10deg) scale(.72); }
+      .balloon-two { top: 7%; right: 3%; transform: rotate(8deg) scale(.66); }
+      .balloon-three { right: 12%; bottom: 2%; }
+      .meme { width: 72px; min-height: 58px; border-width: 2px; box-shadow: 2px 2px 0 #332831; gap: 1px; padding: 4px 3px; }
+      .meme--tl { top: 4px; left: 4px; }
+      .meme--tr { top: 4px; right: 4px; }
+      .meme--bl { bottom: 4px; left: 4px; }
+      .meme--br { right: 4px; bottom: 4px; }
+      .meme-emoji { font-size: 20px; }
+      .meme-caption { font-size: 7px; }
+      .sticker-line { min-height: 16px; gap: 14px; font-size: 15px; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; }
+    }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <svg class="confetti" viewBox="0 0 1440 900" preserveAspectRatio="none" aria-hidden="true">
+      <g opacity=".75">
+        <circle cx="138" cy="300" r="5" fill="#e9789f"/><circle cx="1288" cy="330" r="6" fill="#f2c44e"/>
+        <circle cx="260" cy="710" r="5" fill="#91cdb6"/><circle cx="1160" cy="730" r="4" fill="#e9789f"/>
+        <path d="M315 185l8 16-17-6 17-4-7 17" fill="#f2c44e"/><path d="M1115 200l8 16-17-6 17-4-7 17" fill="#d986b0"/>
+        <path d="M180 500q12-16 24 0t24 0" fill="none" stroke="#9bcfb7" stroke-width="6" stroke-linecap="round"/>
+        <path d="M1230 520q12-16 24 0t24 0" fill="none" stroke="#9bcfb7" stroke-width="6" stroke-linecap="round"/>
+      </g>
+    </svg>
+    <span class="balloon balloon-one" aria-hidden="true"></span>
+    <span class="balloon balloon-two" aria-hidden="true"></span>
+    <span class="balloon balloon-three" aria-hidden="true"></span>
+    <div class="spinning-horses" aria-hidden="true">
+      <img class="spinning-horse" src="assets/kary.png" alt="">
+      <img class="spinning-horse" src="assets/kary-junior.png" alt="">
+      <img class="spinning-horse" src="assets/kary-junior-junior.png" alt="">
+      <img class="spinning-horse" src="assets/dzynks-brzemienny.png" alt="">
+    </div>
+    <aside class="meme meme--tl" aria-label="Mem koni: Ktoś mówi konie? Już biegnę!">
+      <span class="meme-caption">Ktoś mówi: KONIE?</span><span class="meme-emoji" aria-hidden="true">🐴</span><span class="meme-caption">już biegnę</span>
+    </aside>
+    <aside class="meme meme--tr" aria-label="Mem koni: tylko jedna gra, cztery godziny później">
+      <span class="meme-caption">Tylko jedna gierka</span><span class="meme-emoji" aria-hidden="true">👀🐎</span><span class="meme-caption">4 godziny później...</span>
+    </aside>
+    <aside class="meme meme--bl" aria-label="Mem koni: koń po torcie, nyooom">
+      <span class="meme-caption">Koń po torcie</span><span class="meme-emoji" aria-hidden="true">🐎💨</span><span class="meme-caption">NYOOOM!</span>
+    </aside>
+    <aside class="meme meme--br" aria-label="Mem koni: widzę marchewkę, zaraz wracam">
+      <span class="meme-caption">Widzę marchewkę</span><span class="meme-emoji" aria-hidden="true">🥕🐴</span><span class="meme-caption">zaraz wracam</span>
+    </aside>
+
+    <section class="scene" aria-label="Urodzinowy napis i koniki">
+      <div class="greeting">
+        <button class="sound-toggle" type="button" aria-label="Włącz muzykę" aria-pressed="false" title="Włącz muzykę">🔇</button>
+        <h1>WSZYSTKIEGO<br>NAJLEPSZEGO</h1>
+
+        <div class="link-area">
+          <!-- Podmień example.com na właściwy adres gry o koniach. -->
+          <a class="game-link" href="https://example.com/gra-o-koniach" target="_blank" rel="noopener noreferrer">
+            Zagraj
+          </a>
+        </div>
+      </div>
+      <div class="sticker-line" aria-hidden="true"><span>🎈</span><span>🥕</span><span>🐴</span><span>✨</span><span>💨</span></div>
+      <div class="horse-gallery" role="list" aria-label="Cztery konie urodzinowe">
+        <figure class="horse-card" role="listitem"><img class="horse" src="assets/kary.png" alt="Kary, czarny koń w urodzinowej czapeczce" width="180" height="224"><figcaption class="horse-name">Kary</figcaption></figure>
+        <figure class="horse-card" role="listitem"><img class="horse" src="assets/kary-junior.png" alt="Kary Junior, kasztanowy koń w urodzinowej czapeczce" width="180" height="224"><figcaption class="horse-name">Kary Junior</figcaption></figure>
+        <figure class="horse-card" role="listitem"><img class="horse" src="assets/kary-junior-junior.png" alt="Kary Junior Junior, młody koń w urodzinowej czapeczce" width="180" height="224"><figcaption class="horse-name">Kary Junior Junior</figcaption></figure>
+        <figure class="horse-card" role="listitem"><img class="horse" src="assets/dzynks-brzemienny.png" alt="Dżynks Brzemienny, źrebna klacz w urodzinowej czapeczce" width="180" height="224"><figcaption class="horse-name">Dżynks Brzemienny</figcaption></figure>
+      </div>
+    </section>
+  </main>
+  <audio id="birthdayMusic" src="assets/korpokoniarze_reaktywacja.m4a" preload="auto" loop></audio>
+  <script>
+    (() => {
+      const button = document.querySelector('.sound-toggle');
+      const music = document.querySelector('#birthdayMusic');
+
+      function setPlaying(playing) {
+        button.textContent = playing ? '🔊' : '🔇';
+        button.setAttribute('aria-pressed', String(playing));
+        button.setAttribute('aria-label', playing ? 'Wyłącz muzykę' : 'Włącz muzykę');
+        button.title = playing ? 'Wyłącz muzykę' : 'Włącz muzykę';
+      }
+
+      button.addEventListener('click', async () => {
+        if (music.paused) {
+          try { await music.play(); } catch { setPlaying(false); }
+        } else {
+          music.pause();
+        }
+      });
+      music.addEventListener('play', () => setPlaying(true));
+      music.addEventListener('pause', () => setPlaying(false));
+      window.addEventListener('load', () => {
+        music.play().catch(() => setPlaying(false));
+      }, { once: true });
+    })();
+  </script>
+</body>
+</html>
+
