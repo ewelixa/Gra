@@ -165,7 +165,72 @@
       box-shadow: 0 18px 55px #9c647020, 0 5px 0 #f5dbe5;
     }
 
-    .sound-toggle {
+        .music-backdrop {
+      position: fixed;
+      z-index: 20;
+      inset: 0;
+      display: grid;
+      place-items: center;
+      padding: 16px;
+      background: #38243db3;
+      backdrop-filter: blur(3px);
+    }
+
+    .music-backdrop[hidden] { display: none; }
+
+    .music-modal {
+      width: min(560px, 100%);
+      padding: 14px;
+      background: #fffdf8;
+      border: 3px solid #f2c7d8;
+      border-radius: 22px;
+      box-shadow: 0 18px 55px #1a102633;
+    }
+
+    .music-modal-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 10px;
+      color: var(--ink);
+    }
+
+    .music-close {
+      display: grid;
+      width: 34px;
+      height: 34px;
+      place-items: center;
+      color: var(--berry-dark);
+      background: #fff8fb;
+      border: 2px solid #f2c7d8;
+      border-radius: 50%;
+      cursor: pointer;
+      font-size: 17px;
+      font-weight: 900;
+    }
+
+    .music-frame {
+      display: block;
+      width: 100%;
+      height: 140px;
+      border: 0;
+      border-radius: 12px;
+      background: #1e284a;
+    }
+
+    .music-song-link {
+      display: inline-block;
+      margin-top: 9px;
+      color: var(--berry-dark);
+      font-size: 13px;
+      font-weight: 800;
+      text-decoration: none;
+    }
+
+    .music-song-link:hover { text-decoration: underline; }
+
+.sound-toggle {
       position: absolute;
       top: 10px;
       right: 10px;
@@ -403,7 +468,17 @@
 
     <section class="scene" aria-label="Urodzinowy napis i koniki">
       <div class="greeting">
-        <button class="sound-toggle" type="button" aria-label="Włącz muzykę" aria-pressed="false" title="Włącz muzykę">🔇</button>
+        <button class="sound-toggle" type="button" aria-label="Otwórz odtwarzacz Suno" aria-expanded="false" title="Otwórz odtwarzacz Suno">🎵</button>
+        <div class="music-backdrop" hidden>
+          <section class="music-modal" role="dialog" aria-modal="true" aria-label="Odtwarzacz Suno">
+            <div class="music-modal-head">
+              <strong>korpokoniarze_reaktywacja</strong>
+              <button class="music-close" type="button" aria-label="Zamknij odtwarzacz">✕</button>
+            </div>
+            <iframe class="music-frame" src="https://suno.com/embed/e62fb160-2381-4b79-a01c-2a34fbf6330c" title="korpokoniarze_reaktywacja — odtwarzacz Suno" loading="lazy" allow="autoplay; encrypted-media; fullscreen"></iframe>
+            <a class="music-song-link" href="https://suno.com/song/e62fb160-2381-4b79-a01c-2a34fbf6330c?sh=OzbQlRCZggWTfO9O" target="_blank" rel="noopener noreferrer">Otwórz utwór w Suno ↗</a>
+          </section>
+        </div>
         <h1>WSZYSTKIEGO<br>NAJLEPSZEGO</h1>
 
         <div class="link-area">
@@ -422,31 +497,29 @@
       </div>
     </section>
   </main>
-  <audio id="birthdayMusic" src="assets/korpokoniarze_reaktywacja.m4a" preload="auto" loop></audio>
   <script>
     (() => {
-      const button = document.querySelector('.sound-toggle');
-      const music = document.querySelector('#birthdayMusic');
+      const trigger = document.querySelector('.sound-toggle');
+      const backdrop = document.querySelector('.music-backdrop');
+      const closeButton = document.querySelector('.music-close');
 
-      function setPlaying(playing) {
-        button.textContent = playing ? '🔊' : '🔇';
-        button.setAttribute('aria-pressed', String(playing));
-        button.setAttribute('aria-label', playing ? 'Wyłącz muzykę' : 'Włącz muzykę');
-        button.title = playing ? 'Wyłącz muzykę' : 'Włącz muzykę';
+      function setOpen(open) {
+        backdrop.hidden = !open;
+        trigger.setAttribute('aria-expanded', String(open));
+        trigger.setAttribute('aria-label', open ? 'Zamknij odtwarzacz Suno' : 'Otwórz odtwarzacz Suno');
+        trigger.title = open ? 'Zamknij odtwarzacz Suno' : 'Otwórz odtwarzacz Suno';
+        if (open) closeButton.focus();
+        else trigger.focus();
       }
 
-      button.addEventListener('click', async () => {
-        if (music.paused) {
-          try { await music.play(); } catch { setPlaying(false); }
-        } else {
-          music.pause();
-        }
+      trigger.addEventListener('click', () => setOpen(backdrop.hidden));
+      closeButton.addEventListener('click', () => setOpen(false));
+      backdrop.addEventListener('click', event => {
+        if (event.target === backdrop) setOpen(false);
       });
-      music.addEventListener('play', () => setPlaying(true));
-      music.addEventListener('pause', () => setPlaying(false));
-      window.addEventListener('load', () => {
-        music.play().catch(() => setPlaying(false));
-      }, { once: true });
+      document.addEventListener('keydown', event => {
+        if (event.key === 'Escape' && !backdrop.hidden) setOpen(false);
+      });
     })();
   </script>
 </body>
